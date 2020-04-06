@@ -20,7 +20,7 @@ read -p "$(echo -e '\t') Choose your option 1 or 2 or hit enter for default 1 :-
 
     if [[ $optn == 1 ]];
       then
-        git clone https://github.com/patel1678/aws_test_codes.git;
+        git clone https://github.com/ppp-test-repo/aws_test_codes.git;
         cd aws_test_codes;
         git checkout -b webapp-3tier-dep origin/webapp-3tier-dep;
         
@@ -60,7 +60,7 @@ read -p "$(echo -e '\t') Choose your option 1 or 2 or hit enter for default 1 :-
      elif [[ $optn == 2 ]];
       then
         sudo yum install -y git ant;
-        git clone https://github.com/patel1678/aws_test_codes.git;
+        git clone https://github.com/ppp-test-repo/aws_test_codes.git;
         cd aws_test_codes;
         git checkout -b webapp-3tier origin/webapp-3tier;
         	

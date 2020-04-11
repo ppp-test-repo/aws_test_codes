@@ -43,10 +43,15 @@ sudo mv Bookstore-Ant-build.war /opt/tomcat/webapps/;
 #sudo systemctl status tomcat
 #sudo netstat -tulpan | grep 80
 
-sudo mv tomcat /etc/init.d;
-sudo /etc/init.d/tomcat start;
-sudo /etc/init.d/tomcat status;
-sudo netstat -tulpan | egrep '80|8080';
+#sudo cp remote_env /opt/tomcat;
+#sudo mv tomcat /etc/init.d;
+#sudo chmod 755 /etc/init.d/tomcat;
+#sudo /etc/init.d/tomcat start;
+#sudo /etc/init.d/tomcat status;
+#sudo netstat -tulpan | egrep '80|8080';
 
+echo -e "\nAs tomcat user please login to App tier server and run below command";
+echo -e "remote_env;";
+echo -e "/opt/tomcat/bin/startup.sh;";
 
 

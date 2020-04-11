@@ -1,0 +1,26 @@
+
+source /opt/tomcat/remote_env;
+export TOMCAT_USER=tomcat;
+
+ERROR=0
+case "$1" in
+ start)
+            echo $"Starting Tomcat"
+            sh $CATALINA_HOME/bin/startup.sh
+            /bin/su $TOMCAT_USER -c sh $CATALINA_HOME/bin/startup.sh
+            ;;
+ stop)
+           echo $"Stopping Tomcat"
+           /bin/su $TOMCAT_USER -c sh $CATALINA_HOME/bin/shutdown.sh
+           ;;
+ restart)
+           /bin/su $TOMCAT_USER -c sh $CATALINA_HOME/bin/shutdown.sh
+           /bin/su $TOMCAT_USER -c sh $CATALINA_HOME/bin/startup.sh
+            ;;
+ *)
+         echo $"Usage: $0 {start|stop|restart}"
+ exit 1
+ ;;
+esac
+
+exit $ERROR

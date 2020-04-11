@@ -30,7 +30,7 @@ read -p "$(echo -e '\t') Choose your option 1 or 2 or hit enter for default 1 :-
         sudo mv aws_test_codes/* project_dep/;
         sudo rm -rf aws_test_codes;
         sudo chmod -R 777 project_dep;
-        	
+        ###sudo cp /home/ec2-user/*.pem project_dep;	
         cd project_dep;
         curr_dir=$(pwd);
 		
@@ -69,7 +69,8 @@ read -p "$(echo -e '\t') Choose your option 1 or 2 or hit enter for default 1 :-
         sudo mkdir -p project_dep;
         sudo mv aws_test_codes/* project_dep/;
         sudo rm -rf aws_test_codes;
-        
+        sudo chmod -R 777 project_dep;
+        ##sudo cp /home/ec2-user/*.pem project_dep;        
         cd project_dep;
         curr_dir=$(pwd);
         	
@@ -137,7 +138,7 @@ task_two() {
     echo -e "\n";
     
     read -p "Please enter key pair file name :- " keypair;
-    chmod 400 $curr_dir/$keypair;
+    sudo chmod 400 $curr_dir/$keypair;
     rs=$(echo $?);
     if [[ $rs == 0 ]];
         then 
@@ -153,6 +154,7 @@ task_two() {
            scp -i $keypair Bookstore-Ant-build.war $username@$app_ip:/home/$username;
            scp -i $keypair $curr_dir/sql/Bookstore.sql $username@$app_ip:/home/$username;
            scp -i $keypair $curr_dir/tomcat.service $username@$app_ip:/home/$username;
+		   scp -i $keypair $curr_dir/tomcat $username@$app_ip:/home/$username;
            scp -i $keypair tomcat.zip $username@$app_ip:/home/$username;
            scp -i $keypair remote_script.sh $username@$app_ip:/home/$username;
            scp -i $keypair remote_env $username@$app_ip:/home/$username;
@@ -288,7 +290,7 @@ main() {
     if [[ $kp_ans == "Y" || $kp_ans == "y" ]]; 
       then
        task_two;
-       delete_nat;
+       #delete_nat;
      else
        task_one;
 	  

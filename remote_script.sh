@@ -26,18 +26,27 @@ sudo chown -R tomcat:tomcat tomcat/
 sudo mv tomcat/ /opt;
 
 #echo -e "\nPlease enter rds password when promted";
+echo -e "\nWating for 40 second before db process\n";
+sleep 40;
+
 echo -e "\nSetting up MySQL database\n";
 
-mysql -h $rds_endpoint -P 3306 -u $rds_user -p < $curr_dir/Bookstore.sql;
+mysql -h $rds_endpoint -P 3306 -u $rds_user -p$rds_pass < $curr_dir/Bookstore.sql;
 
 echo -e "\nDeploying Application\n";
 sudo chown -R tomcat:tomcat Bookstore-Ant-build.war;
 sudo mv Bookstore-Ant-build.war /opt/tomcat/webapps/;
 
-sudo mv tomcat.service /etc/systemd/system/tomcat.service;
-sudo systemctl daemon-reload
-sudo systemctl start tomcat
-sudo systemctl status tomcat
-sudo netstat -tulpan | grep 80
+#sudo mv tomcat.service /etc/systemd/system/tomcat.service;
+#sudo systemctl daemon-reload
+#sudo systemctl start tomcat
+#sudo systemctl status tomcat
+#sudo netstat -tulpan | grep 80
+
+sudo mv tomcat /etc/init.d;
+sudo /etc/init.d/tomcat start;
+sudo /etc/init.d/tomcat status;
+sudo netstat -tulpan | egrep '80|8080';
+
 
 

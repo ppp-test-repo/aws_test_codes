@@ -1097,9 +1097,9 @@
         "GroupId": {
           "Ref": "webpublicsg"
         },
-        "IpProtocol": "-1",
-        "FromPort": "-1",
-        "ToPort": "-1",
+        "IpProtocol": "tcp",
+        "FromPort": "0",
+        "ToPort": "65535",
         "CidrIp": "0.0.0.0/0"
       }
     },
@@ -1266,9 +1266,9 @@
         "GroupId": {
           "Ref": "appprivatesg"
         },
-        "IpProtocol": "-1",
-        "FromPort": "-1",
-        "ToPort": "-1",
+        "IpProtocol": "tcp",
+        "FromPort": "0",
+        "ToPort": "65535",
         "CidrIp": "0.0.0.0/0"
       }
     },

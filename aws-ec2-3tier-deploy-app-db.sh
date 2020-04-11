@@ -6,7 +6,7 @@ initial_function () {
 
 sudo yum install -y httpd zip unzip java-1.8.0-openjdk-devel git;
 
-export JAVA_HOME="/usr/lib/jvm/jre";
+export JAVA_HOME="/usr/lib/jvm/jre" ;
 export JAVA_OPTS="-Djava.security.egd=file:///dev/urandom";
 
 echo -e "\n \t 1) Downlaod compiled source code \n\t 2) Downlaod and compile source ";
@@ -85,6 +85,10 @@ read -p "$(echo -e '\t') Choose your option 1 or 2 or hit enter for default 1 :-
         echo -e "rds_pass=$rds_pass\n" >> remote_env;
         echo -e "JAVA_HOME=$JAVA_HOME" >> remote_env;
         echo -e "JAVA_OPTS=$JAVA_OPTS" >> remote_env;
+        echo -e "CATALINA_BASE=/opt/tomcat" >> remote_env;
+        echo -e "CATALINA_HOME=/opt/tomcat" >> remote_env;
+        echo -e "JRE_HOME=$JAVA_HOME" >> remote_env;
+		
         sudo chmod 777 remote_env;
         
         sudo sed -i "s/root/$rds_user/" WebContent/WEB-INF/web.xml;

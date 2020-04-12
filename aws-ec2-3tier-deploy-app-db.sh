@@ -139,13 +139,15 @@ task_two() {
    echo -e "\n";
    read -p "Please enter web url of App tier IP or  ELB DNS Name  :-  " app_elb_url;
    
-   urlpath="http://${app_elb_url}:8080/${web_url_context}"
-   
+   urlpath="http://${app_elb_url}:8080/${web_url_context}";
+   manager_urlpath="http://${app_elb_url}:8080/manager";   
    
     echo -e "\n<VirtualHost *:*>\n\n" > tomcat.conf;
     echo -e "\tProxyPreserveHost On" >> tomcat.conf;
     echo -e "\tProxyPass /$web_url_context $urlpath/" >> tomcat.conf;
     echo -e "\tProxyPassReverse /$web_url_context $urlpath/" >> tomcat.conf;
+    echo -e "\tProxyPass /manager $manager_urlpath/" >> tomcat.conf;
+    echo -e "\tProxyPassReverse /manager $manager_urlpath/" >> tomcat.conf;
     echo -e "\n</VirtualHost>\n\n" >> tomcat.conf;
     sudo cp -f $curr_dir/tomcat.conf /etc/httpd/conf.d/;
 	sudo systemctl start httpd;

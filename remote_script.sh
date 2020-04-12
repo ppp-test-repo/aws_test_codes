@@ -34,14 +34,20 @@ echo -e "\nSetting up MySQL database\n";
 mysql -h $rds_endpoint -P 3306 -u $rds_user -p$rds_pass < $curr_dir/Bookstore.sql;
 
 echo -e "\nDeploying Application\n";
-sudo chown -R tomcat:tomcat Bookstore-Ant-build.war;
-sudo mv Bookstore-Ant-build.war /opt/tomcat/webapps/;
+#sudo mv Bookstore-Ant-build.war /opt/tomcat/webapps/;
+sudo chown -R tomcat:tomcat /opt/tomcat/;
+
 
 sudo mv tomcat.service /etc/systemd/system/tomcat.service;
 sudo systemctl daemon-reload
 sudo systemctl start tomcat
 sudo systemctl status tomcat
 sudo netstat -tulpan | grep 80
+
+sudo cp /home/$username/dbdepweb.xml /opt/tomcat/webapps/Bookstore-Ant-build/WEB-INF/web.xml;
+sudo chown -R tomcat:tomcat /opt/tomcat/;
+sudo systemctl restart tomcat;
+
 
 #sudo cp remote_env /opt/tomcat;
 #sudo mv tomcat /etc/init.d;

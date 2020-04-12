@@ -55,12 +55,9 @@ read -p "$(echo -e '\t') Choose your option 1 or 2 or hit enter for default 1 :-
         # sudo sed -i "s/pp@nasa123/$rds_pass/" Bookstore-Ant-build/WEB-INF/web.xml;
         # sudo zip -r Bookstore-Ant-build.war;
         
-        unzip -d Bookstore-Ant-build/ Bookstore-Ant-build.war;
-        chown -R ec2-user:ec2-user Bookstore-Ant-build/;
-        sed -i "s/root/$rds_user/" Bookstore-Ant-build/WEB-INF/web.xml;
-        sed -i "s/localhost/$rds_endpoint/" Bookstore-Ant-build/WEB-INF/web.xml;  
-        sed -i "s/pp@nasa123/$rds_pass/" Bookstore-Ant-build/WEB-INF/web.xml;
-        zip -r Bookstore-Ant-build.war Bookstore-Ant-build/;
+        sed -i "s/root/$rds_user/" dbdepweb.xml;;
+        sed -i "s/localhost/$rds_endpoint/" dbdepweb.xml;;  
+        sed -i "s/pp@nasa123/$rds_pass/" dbdepweb.xml;;
         
         sudo mkdir -p sql; 
         sudo cp Bookstore.sql sql/;
@@ -170,18 +167,23 @@ task_two() {
            scp -i $keypair Bookstore-Ant-build.war $username@$app_ip:/home/$username;
            scp -i $keypair $curr_dir/sql/Bookstore.sql $username@$app_ip:/home/$username;
            scp -i $keypair $curr_dir/tomcat.service $username@$app_ip:/home/$username;
-		   scp -i $keypair $curr_dir/tomcat $username@$app_ip:/home/$username;
            scp -i $keypair tomcat.zip $username@$app_ip:/home/$username;
            scp -i $keypair remote_script.sh $username@$app_ip:/home/$username;
            scp -i $keypair remote_env $username@$app_ip:/home/$username;
+		   scp -i $keypair dbdepweb.xml $username@$app_ip:/home/$username;
            
            echo -e "\n Please run remote_script.sh on App tier server";
            
-           #ssh -i $keypair $username@$app_ip;
-           ssh -i $keypair $username@$app_ip 'bash remote_script.sh';
-           #ssh -i $keypair $username@$app_ip 'bash -s' < remote_script.sh;
-           #cat remote_script.sh | ssh -i $keypair $username@$app_ip;
-           
+		   echo -e "\nPlease check Nat Gateway' status is available or not \n";
+		   read -p "Is NAT Gateway status available? if not keep checking and then enter (Y/y) when available:- " ngw_st;
+		   if [[ $ngw_st == "Y" || $ngw_st == "y" ]];
+		      then
+                #ssh -i $keypair $username@$app_ip;
+                ssh -i $keypair $username@$app_ip 'bash remote_script.sh';
+                #ssh -i $keypair $username@$app_ip 'bash -s' < remote_script.sh;
+                #cat remote_script.sh | ssh -i $keypair $username@$app_ip;
+           fi
+            
       else 
            echo -e "\n Result failed due to keypair file not found at $curr_dir/$keypair \n";
            echo -e "Please upload file and re run this script";

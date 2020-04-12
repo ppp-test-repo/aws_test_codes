@@ -55,9 +55,9 @@ read -p "$(echo -e '\t') Choose your option 1 or 2 or hit enter for default 1 :-
         # sudo sed -i "s/pp@nasa123/$rds_pass/" Bookstore-Ant-build/WEB-INF/web.xml;
         # sudo zip -r Bookstore-Ant-build.war;
         
-        sed -i "s/root/$rds_user/" dbdepweb.xml;;
-        sed -i "s/localhost/$rds_endpoint/" dbdepweb.xml;;  
-        sed -i "s/pp@nasa123/$rds_pass/" dbdepweb.xml;;
+        sed -i "s/root/$rds_user/" dbdepweb.xml;
+        sed -i "s/localhost/$rds_endpoint/" dbdepweb.xml;
+        sed -i "s/pp@nasa123/$rds_pass/" dbdepweb.xml;
         
         sudo mkdir -p sql; 
         sudo cp Bookstore.sql sql/;
@@ -134,17 +134,45 @@ task_two() {
    web_url_context=$( ls | grep war | cut -d '.' -f 1);
    
    echo -e "\n";
-   read -p "Please enter web url of App tier IP or  ELB DNS Name  :-  " app_elb_url;
+   read -p "Please enter App tier IP :-  " app_ip_url;
+   read -p "Please enter App tier ELB DNS Name  :-  " app_elb_url;
+#   read -p "Please enter Web tier IP :-  " web_ip_url;
+#   read -p "Please enter Web ELB DNS Name  :-  " web_elb_url;
    
-   urlpath="http://${app_elb_url}:8080/${web_url_context}";
-   manager_urlpath="http://${app_elb_url}:8080/manager";   
+   appurlpath="http://${app_ip_url}:8080/${web_url_context}";
+   appmanager_urlpath="http://${app_ip_url}:8080/manager";   
+   appelburlpath="http://${app_elb_url}:8080/${web_url_context}";
+   appelbmanager_urlpath="http://${app_elb_url}:8080/manager";  
+
+#   weburlpath="http://${web_ip_url}:8080/${web_url_context}";
+#   webmanager_urlpath="http://${web_ip_url}:8080/manager";   
+#   webelburlpath="http://${web_elb_url}:8080/${web_url_context}";
+#   webelbmanager_urlpath="http://${web_elb_url}:8080/manager";        
    
     echo -e "\n<VirtualHost *:*>\n\n" > tomcat.conf;
     echo -e "\tProxyPreserveHost On" >> tomcat.conf;
-    echo -e "\tProxyPass /$web_url_context $urlpath/" >> tomcat.conf;
-    echo -e "\tProxyPassReverse /$web_url_context $urlpath/" >> tomcat.conf;
-    echo -e "\tProxyPass /manager $manager_urlpath/" >> tomcat.conf;
-    echo -e "\tProxyPassReverse /manager $manager_urlpath/" >> tomcat.conf;
+
+    echo -e "\tProxyPass /$web_url_context $appurlpath/" >> tomcat.conf;
+    echo -e "\tProxyPassReverse /$web_url_context $appurlpath/" >> tomcat.conf;   
+    echo -e "\tProxyPass /manager $appmanager_urlpath/" >> tomcat.conf;
+    echo -e "\tProxyPassReverse /manager $appmanager_urlpath/" >> tomcat.conf;
+
+    echo -e "\tProxyPass /$web_url_context $appelburlpath/" >> tomcat.conf;
+    echo -e "\tProxyPassReverse /$web_url_context $appelburlpath/" >> tomcat.conf;   
+    echo -e "\tProxyPass /manager $appelbmanager_urlpath/" >> tomcat.conf;
+    echo -e "\tProxyPassReverse /manager $appelbmanager_urlpath/" >> tomcat.conf;
+    
+#    echo -e "\tProxyPass /$web_url_context $weburlpath/" >> tomcat.conf;
+#    echo -e "\tProxyPassReverse /$web_url_context $weburlpath/" >> tomcat.conf;   
+#    echo -e "\tProxyPass /manager $webmanager_urlpath/" >> tomcat.conf;
+#    echo -e "\tProxyPassReverse /manager $webmanager_urlpath/" >> tomcat.conf;
+
+#    echo -e "\tProxyPass /$web_url_context $webelburlpath/" >> tomcat.conf;
+#    echo -e "\tProxyPassReverse /$web_url_context $webelburlpath/" >> tomcat.conf;   
+#    echo -e "\tProxyPass /manager $webelbmanager_urlpath/" >> tomcat.conf;
+#    echo -e "\tProxyPassReverse /manager $webelbmanager_urlpath/" >> tomcat.conf;
+
+	
     echo -e "\n</VirtualHost>\n\n" >> tomcat.conf;
     sudo cp -f $curr_dir/tomcat.conf /etc/httpd/conf.d/;
 	sudo systemctl start httpd;
@@ -308,7 +336,7 @@ main() {
     if [[ $kp_ans == "Y" || $kp_ans == "y" ]]; 
       then
        task_two;
-       #delete_nat;
+       delete_nat;
      else
        task_one;
 	  

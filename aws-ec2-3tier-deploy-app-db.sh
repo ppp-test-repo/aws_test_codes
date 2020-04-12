@@ -48,11 +48,19 @@ read -p "$(echo -e '\t') Choose your option 1 or 2 or hit enter for default 1 :-
         sudo chmod 777 remote_env;
         
         
-        sudo unzip -d Bookstore-Ant-build/ Bookstore-Ant-build.war;
-        sudo sed -i "s/root/$rds_user/" Bookstore-Ant-build/WEB-INF/web.xml;
-        sudo sed -i "s/localhost/$rds_endpoint/" Bookstore-Ant-build/WEB-INF/web.xml;  
-        sudo sed -i "s/pp@nasa123/$rds_pass/" Bookstore-Ant-build/WEB-INF/web.xml;
-        sudo zip -r Bookstore-Ant-build.war;
+        # sudo unzip -d Bookstore-Ant-build/ Bookstore-Ant-build.war;
+        # sudo chown -R ec2-user:ec2-user Bookstore-Ant-build/;
+        # sudo sed -i "s/root/$rds_user/" Bookstore-Ant-build/WEB-INF/web.xml;
+        # sudo sed -i "s/localhost/$rds_endpoint/" Bookstore-Ant-build/WEB-INF/web.xml;  
+        # sudo sed -i "s/pp@nasa123/$rds_pass/" Bookstore-Ant-build/WEB-INF/web.xml;
+        # sudo zip -r Bookstore-Ant-build.war;
+        
+        unzip -d Bookstore-Ant-build/ Bookstore-Ant-build.war;
+        chown -R ec2-user:ec2-user Bookstore-Ant-build/;
+        sed -i "s/root/$rds_user/" Bookstore-Ant-build/WEB-INF/web.xml;
+        sed -i "s/localhost/$rds_endpoint/" Bookstore-Ant-build/WEB-INF/web.xml;  
+        sed -i "s/pp@nasa123/$rds_pass/" Bookstore-Ant-build/WEB-INF/web.xml;
+        zip -r Bookstore-Ant-build.war Bookstore-Ant-build/;
         
         sudo mkdir -p sql; 
         sudo cp Bookstore.sql sql/;
@@ -92,9 +100,14 @@ read -p "$(echo -e '\t') Choose your option 1 or 2 or hit enter for default 1 :-
 		
         sudo chmod 777 remote_env;
         
-        sudo sed -i "s/root/$rds_user/" WebContent/WEB-INF/web.xml;
-        sudo sed -i "s/localhost/$rds_endpoint/" WebContent/WEB-INF/web.xml;  
-        sudo sed -i "s/pp@nasa123/$rds_pass/" WebContent/WEB-INF/web.xml;
+#        sudo sed -i "s/root/$rds_user/" WebContent/WEB-INF/web.xml;
+#        sudo sed -i "s/localhost/$rds_endpoint/" WebContent/WEB-INF/web.xml;  
+#        sudo sed -i "s/pp@nasa123/$rds_pass/" WebContent/WEB-INF/web.xml;
+        
+        sed -i "s/root/$rds_user/" WebContent/WEB-INF/web.xml;
+        sed -i "s/localhost/$rds_endpoint/" WebContent/WEB-INF/web.xml;  
+        sed -i "s/pp@nasa123/$rds_pass/" WebContent/WEB-INF/web.xml;
+		
         ant war;
         
      else
@@ -134,7 +147,8 @@ task_two() {
     echo -e "\tProxyPass /$web_url_context $urlpath/" >> tomcat.conf;
     echo -e "\tProxyPassReverse /$web_url_context $urlpath/" >> tomcat.conf;
     echo -e "\n</VirtualHost>\n\n" >> tomcat.conf;
-    
+    sudo cp -f $curr_dir/tomcat.conf /etc/httpd/conf.d/;
+	sudo systemctl start httpd;
     echo -e "\n";
     
     read -p "Please enter key pair file name :- " keypair;

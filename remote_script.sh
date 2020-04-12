@@ -37,11 +37,11 @@ echo -e "\nDeploying Application\n";
 sudo chown -R tomcat:tomcat Bookstore-Ant-build.war;
 sudo mv Bookstore-Ant-build.war /opt/tomcat/webapps/;
 
-#sudo mv tomcat.service /etc/systemd/system/tomcat.service;
-#sudo systemctl daemon-reload
-#sudo systemctl start tomcat
-#sudo systemctl status tomcat
-#sudo netstat -tulpan | grep 80
+sudo mv tomcat.service /etc/systemd/system/tomcat.service;
+sudo systemctl daemon-reload
+sudo systemctl start tomcat
+sudo systemctl status tomcat
+sudo netstat -tulpan | grep 80
 
 #sudo cp remote_env /opt/tomcat;
 #sudo mv tomcat /etc/init.d;
@@ -50,8 +50,8 @@ sudo mv Bookstore-Ant-build.war /opt/tomcat/webapps/;
 #sudo /etc/init.d/tomcat status;
 #sudo netstat -tulpan | egrep '80|8080';
 
-echo -e "\nAs tomcat user please login to App tier server and run below command";
-echo -e "remote_env;";
-echo -e "/opt/tomcat/bin/startup.sh;";
+#echo -e "\nAs tomcat user please login to App tier server and run below command";
+#echo -e "source remote_env;";
+#echo -e "/opt/tomcat/bin/startup.sh;";
 
 

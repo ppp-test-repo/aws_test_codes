@@ -34,7 +34,7 @@ echo -e "\nSetting up MySQL database\n";
 mysql -h $rds_endpoint -P 3306 -u $rds_user -p$rds_pass < $curr_dir/Bookstore.sql;
 
 echo -e "\nDeploying Application\n";
-#sudo mv Bookstore-Ant-build.war /opt/tomcat/webapps/;
+sudo mv Bookstore-Ant-build.war /opt/tomcat/webapps/;
 sudo chown -R tomcat:tomcat /opt/tomcat/;
 
 
@@ -49,12 +49,6 @@ sudo chown -R tomcat:tomcat /opt/tomcat/;
 sudo systemctl restart tomcat;
 
 
-#sudo cp remote_env /opt/tomcat;
-#sudo mv tomcat /etc/init.d;
-#sudo chmod 755 /etc/init.d/tomcat;
-#sudo /etc/init.d/tomcat start;
-#sudo /etc/init.d/tomcat status;
-#sudo netstat -tulpan | egrep '80|8080';
 
 #echo -e "\nAs tomcat user please login to App tier server and run below command";
 #echo -e "source remote_env;";

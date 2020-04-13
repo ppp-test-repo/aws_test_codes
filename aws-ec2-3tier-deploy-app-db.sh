@@ -280,8 +280,8 @@ create_nat_route () {
     app_sub_id=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=$vpc_id_sub" --filters "Name=tag:Name,Values=$app_sub_tag" --region=$region_name | grep "SubnetId" | cut -d ":" -f 2 | cut -d '"' -f 2;);
 	
     echo -e "\nBelow are app tier route table configured\n Please use it to find App tier route table id\n";
-    aws ec2 describe-route-tables --filters "Name=vpc-id,Values=$vpc_id_sub" --filters "Name=association.subnet-id,Values=$app_sub_id"   --region=ap-south-1 --output=table ;
-            
+    aws ec2 describe-route-tables --filters "Name=vpc-id,Values=$vpc_id_sub" --filters "Name=association.subnet-id,Values=$app_sub_id"   --region=$region_name --output=table ;
+    
     echo -e "\nPlease search for \n\n\t aws:cloudformation:logical-id|  apprt \n\nKey Value in above table\nyou can find a Name under that Key use its value for next line input\n";
     #aws ec2 describe-route-tables --filters "Name=vpc-id,Values=$vpc_id_sub" --filters "Name=association.subnet-id,Values=$app_sub_id"  --filters Name=tag:"aws:cloudformation:logical-id",Values=apprt --region=ap-south-1
     

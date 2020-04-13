@@ -67,7 +67,13 @@
     "publicAZ": {
       "Type": "AWS::EC2::AvailabilityZone::Name"
     },
+    "publicAZdr": {
+      "Type": "AWS::EC2::AvailabilityZone::Name"
+    },
     "privateAZ": {
+      "Type": "AWS::EC2::AvailabilityZone::Name"
+    },
+    "privateAZdr": {
       "Type": "AWS::EC2::AvailabilityZone::Name"
     },
     "DBAZ": {
@@ -88,6 +94,16 @@
       "Type": "String",
       "Description": "This will be Name of Public Subnet (Note: Name is preceded by \"PublicSubnet\")"
     },
+    "publicsubnetcidrdr": {
+      "Type": "String",
+      "Default": "10.0.4.0/24",
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "Description": "This will be Public Subent CIDR"
+    },
+    "publicSubnetNamedr": {
+      "Type": "String",
+      "Description": "This will be Name of Public Subnet (Note: Name is preceded by \"PublicSubnet\")"
+    },
     "appprivatesubnetcidr": {
       "Type": "String",
       "Default": "10.0.2.0/24",
@@ -95,6 +111,16 @@
       "Description": "This will be App tier Private Subent CIDR"
     },
     "appprivateSubnetName": {
+      "Type": "String",
+      "Description": "This will be Name of App Private Subnet (Note: Name is preceded by \"AppPrivateSubnet\")"
+    },
+    "appprivatesubnetcidrdr": {
+      "Type": "String",
+      "Default": "10.0.5.0/24",
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "Description": "This will be App tier Private Subent CIDR"
+    },
+    "appprivateSubnetNamedr": {
       "Type": "String",
       "Description": "This will be Name of App Private Subnet (Note: Name is preceded by \"AppPrivateSubnet\")"
     },
@@ -110,7 +136,7 @@
     },
     "db2privatesubnetcidr": {
       "Type": "String",
-      "Default": "10.0.4.0/24",
+      "Default": "10.0.6.0/24",
       "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
       "Description": "This will be CIDR of DB tier Private Subent No-2"
     },
@@ -294,7 +320,10 @@
           "Parameters": [
             "publicAZ",
             "publicsubnetcidr",
-            "publicSubnetName"
+            "publicSubnetName",
+            "publicAZdr",
+            "publicsubnetcidrdr",
+            "publicSubnetNamedr"
           ]
         },
         {
@@ -305,7 +334,10 @@
           "Parameters": [
             "privateAZ",
             "appprivatesubnetcidr",
-            "appprivateSubnetName"
+            "appprivateSubnetName",
+            "privateAZdr",
+            "appprivatesubnetcidrdr",
+            "appprivateSubnetNamedr"
           ]
         },
         {
@@ -406,10 +438,22 @@
         "publicAZ": {
           "default": "Select Availability Zone "
         },
+        "publicsubnetcidrdr": {
+          "default": "Enter Public Subnet CIDR for dr site"
+        },
+        "publicAZdr": {
+          "default": "Select Availability Zone "
+        },
         "appprivatesubnetcidr": {
           "default": "Enter App Private Subnet CIDR"
         },
         "privateAZ": {
+          "default": "Select Availability Zone"
+        },
+        "appprivatesubnetcidrdr": {
+          "default": "Enter App Private Subnet CIDR for dr site"
+        },
+        "privateAZdr": {
           "default": "Select Availability Zone"
         },
         "db1privatesubnetcidr": {
@@ -762,6 +806,40 @@
         ]
       }
     },
+    "publicsubnetdr": {
+      "Type": "AWS::EC2::Subnet",
+      "DependsOn": [
+        "VPC",
+        "igw"
+      ],
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "CidrBlock": {
+          "Ref": "publicsubnetcidrdr"
+        },
+        "AvailabilityZone": {
+          "Ref": "publicAZdr"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "-",
+                [
+                  "PublicSubnetdr",
+                  {
+                    "Ref": "publicSubnetNamedr"
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
     "appprivatesubnet": {
       "Type": "AWS::EC2::Subnet",
       "DependsOn": [
@@ -787,6 +865,39 @@
                   "AppPrivateSubnet",
                   {
                     "Ref": "appprivateSubnetName"
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "appprivatesubnetdr": {
+      "Type": "AWS::EC2::Subnet",
+      "DependsOn": [
+        "VPC"
+      ],
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "CidrBlock": {
+          "Ref": "appprivatesubnetcidrdr"
+        },
+        "AvailabilityZone": {
+          "Ref": "privateAZdr"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": [
+                "-",
+                [
+                  "AppPrivateSubnetdr",
+                  {
+                    "Ref": "appprivateSubnetNamedr"
                   }
                 ]
               ]
@@ -921,7 +1032,7 @@
       "Type": "AWS::EC2::Route",
       "DependsOn": [
         "webrt",
-		"igw"
+        "igw"
       ],
       "Properties": {
         "DestinationCidrBlock": "0.0.0.0/0",
@@ -947,6 +1058,20 @@
         }
       }
     },
+    "subnetroute1dr": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "DependsOn": [
+        "webrt"
+      ],
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "webrt"
+        },
+        "SubnetId": {
+          "Ref": "publicsubnetdr"
+        }
+      }
+    },
     "subnetroute2": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "DependsOn": [
@@ -958,6 +1083,20 @@
         },
         "SubnetId": {
           "Ref": "appprivatesubnet"
+        }
+      }
+    },
+    "subnetroute2dr": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "DependsOn": [
+        "apprt"
+      ],
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "apprt"
+        },
+        "SubnetId": {
+          "Ref": "appprivatesubnetdr"
         }
       }
     },
@@ -1096,6 +1235,120 @@
       "Properties": {
         "GroupId": {
           "Ref": "webpublicsg"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "0",
+        "ToPort": "65535",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
+    "webpublicsgdr": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "DependsOn": [
+        "VPC"
+      ],
+      "Properties": {
+        "GroupDescription": "Web tier public SG dr",
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "web-public-sg-dr"
+          }
+        ]
+      }
+    },
+    "ibwebsgIngress1dr": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "DependsOn": [
+        "webpublicsgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "webpublicsgdr"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "22",
+        "ToPort": "22",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
+    "ibwebsgIngress2dr": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "DependsOn": [
+        "webpublicsgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "webpublicsgdr"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "80",
+        "ToPort": "80",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
+    "obwebsgEgress1dr": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "DependsOn": [
+        "webpublicsgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "webpublicsgdr"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "22",
+        "ToPort": "22",
+        "CidrIp": {
+          "Ref": "appprivatesubnetcidrdr"
+        }
+      }
+    },
+    "obwebsgEgress2dr": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "DependsOn": [
+        "webpublicsgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "webpublicsgdr"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "80",
+        "ToPort": "80",
+        "CidrIp": {
+          "Ref": "appprivatesubnetcidrdr"
+        }
+      }
+    },
+    "obwebsgEgress28080dr": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "DependsOn": [
+        "webpublicsgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "webpublicsgdr"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "8080",
+        "ToPort": "8080",
+        "CidrIp": {
+          "Ref": "appprivatesubnetcidrdr"
+        }
+      }
+    },
+    "obwebsgEgress3dr": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "DependsOn": [
+        "webpublicsgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "webpublicsgdr"
         },
         "IpProtocol": "tcp",
         "FromPort": "0",
@@ -1257,7 +1510,7 @@
         }
       }
     },
-	"obappsgEgress4": {
+    "obappsgEgress4": {
       "Type": "AWS::EC2::SecurityGroupEgress",
       "DependsOn": [
         "appprivatesg"
@@ -1265,6 +1518,175 @@
       "Properties": {
         "GroupId": {
           "Ref": "appprivatesg"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "0",
+        "ToPort": "65535",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
+    "appprivatesgdr": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "DependsOn": [
+        "VPC"
+      ],
+      "Properties": {
+        "GroupDescription": "App tier public SG dr",
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "app-private-sg-dr"
+          }
+        ]
+      }
+    },
+    "ibappsgIngress1dr": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "DependsOn": [
+        "appprivatesgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "appprivatesgdr"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "22",
+        "ToPort": "22",
+        "CidrIp": {
+          "Ref": "publicsubnetcidrdr"
+        }
+      }
+    },
+    "ibappsgIngress2dr": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "DependsOn": [
+        "appprivatesgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "appprivatesgdr"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "80",
+        "ToPort": "80",
+        "CidrIp": {
+          "Ref": "publicsubnetcidrdr"
+        }
+      }
+    },
+    "ibappsgIngress28080dr": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "DependsOn": [
+        "appprivatesgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "appprivatesgdr"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "8080",
+        "ToPort": "8080",
+        "CidrIp": {
+          "Ref": "publicsubnetcidrdr"
+        }
+      }
+    },
+    "ibappsgIngress3dr": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "DependsOn": [
+        "appprivatesgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "appprivatesgdr"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "1024",
+        "ToPort": "65535",
+        "CidrIp": {
+          "Ref": "db1privatesubnetcidr"
+        }
+      }
+    },
+    "ibappsgIngress4dr": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "DependsOn": [
+        "appprivatesgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "appprivatesgdr"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "1024",
+        "ToPort": "65535",
+        "CidrIp": {
+          "Ref": "db2privatesubnetcidr"
+        }
+      }
+    },
+    "obappsgEgress1dr": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "DependsOn": [
+        "appprivatesgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "appprivatesgdr"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "3306",
+        "ToPort": "3306",
+        "CidrIp": {
+          "Ref": "db1privatesubnetcidr"
+        }
+      }
+    },
+    "obappsgEgress2dr": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "DependsOn": [
+        "appprivatesgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "appprivatesgdr"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "3306",
+        "ToPort": "3306",
+        "CidrIp": {
+          "Ref": "db2privatesubnetcidr"
+        }
+      }
+    },
+    "obappsgEgress3dr": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "DependsOn": [
+        "appprivatesgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "appprivatesgdr"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "1024",
+        "ToPort": "65535",
+        "CidrIp": {
+          "Ref": "publicsubnetcidrdr"
+        }
+      }
+    },
+    "obappsgEgress4dr": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "DependsOn": [
+        "appprivatesgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "appprivatesgdr"
         },
         "IpProtocol": "tcp",
         "FromPort": "0",
@@ -1324,6 +1746,58 @@
         }
       }
     },
+    "db1privatesgdr": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "DependsOn": [
+        "VPC"
+      ],
+      "Properties": {
+        "GroupDescription": "DB tier public SG 1 dr",
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "db1-private-sg-dr"
+          }
+        ]
+      }
+    },
+    "ibdb1sgIngress1dr": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "DependsOn": [
+        "db1privatesgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "db1privatesg"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "3306",
+        "ToPort": "3306",
+        "CidrIp": {
+          "Ref": "appprivatesubnetcidrdr"
+        }
+      }
+    },
+    "obdb1sgEgress1dr": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "DependsOn": [
+        "db1privatesgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "db1privatesgdr"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "1024",
+        "ToPort": "65535",
+        "CidrIp": {
+          "Ref": "appprivatesubnetcidrdr"
+        }
+      }
+    },
     "db2privatesg": {
       "Type": "AWS::EC2::SecurityGroup",
       "DependsOn": [
@@ -1376,6 +1850,58 @@
         }
       }
     },
+    "db2privatesgdr": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "DependsOn": [
+        "VPC"
+      ],
+      "Properties": {
+        "GroupDescription": "DB tier public SG 2 for dr",
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "db2-private-sg-dr"
+          }
+        ]
+      }
+    },
+    "ibdb2sgIngress1dr": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "DependsOn": [
+        "db2privatesgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "db2privatesgdr"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "3306",
+        "ToPort": "3306",
+        "CidrIp": {
+          "Ref": "appprivatesubnetcidrdr"
+        }
+      }
+    },
+    "obdb2sgEgress1dr": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "DependsOn": [
+        "db2privatesgdr"
+      ],
+      "Properties": {
+        "GroupId": {
+          "Ref": "db2privatesgdr"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "1024",
+        "ToPort": "65535",
+        "CidrIp": {
+          "Ref": "appprivatesubnetcidrdr"
+        }
+      }
+    },
     "dbprivatesubnetgroup": {
       "Type": "AWS::RDS::DBSubnetGroup",
       "DependsOn": [
@@ -1408,7 +1934,8 @@
       "Type": "AWS::EC2::Instance",
       "DependsOn": [
         "VPC",
-        "webpublicsg"
+        "webpublicsg",
+        "webpublicsgdr"
       ],
       "Properties": {
         "DisableApiTermination": {
@@ -1431,6 +1958,9 @@
             "GroupSet": [
               {
                 "Ref": "webpublicsg"
+              },
+              {
+                "Ref": "webpublicsgdr"
               }
             ],
             "SubnetId": {
@@ -1487,7 +2017,8 @@
       "Type": "AWS::EC2::Instance",
       "DependsOn": [
         "VPC",
-        "appprivatesg"
+        "appprivatesg",
+        "appprivatesgdr"
       ],
       "Properties": {
         "DisableApiTermination": {
@@ -1510,6 +2041,9 @@
             "GroupSet": [
               {
                 "Ref": "appprivatesg"
+              },
+              {
+                "Ref": "appprivatesgdr"
               }
             ],
             "SubnetId": {
@@ -1623,6 +2157,8 @@
       "DependsOn": [
         "publicsubnet",
         "webpublicsg",
+        "webpublicsgdr",
+        "publicsubnetdr",
         "igw",
         "webrt",
         "subnetroute1"
@@ -1634,12 +2170,15 @@
             "Ref": "publicsubnet"
           },
           {
-            "Ref": "appprivatesubnet"
+            "Ref": "publicsubnetdr"
           }
         ],
         "SecurityGroups": [
           {
             "Ref": "webpublicsg"
+          },
+          {
+            "Ref": "webpublicsgdr"
           }
         ],
         "IpAddressType": "ipv4",
@@ -1654,16 +2193,41 @@
     },
     "ALBTargetGroup": {
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "DependsOn": [
+        "ApplicationLoadBalancer"
+      ],
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
         "VpcId": {
           "Ref": "VPC"
-        }
+        },
+        "Name": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "AWS::StackName"
+              }
+            ]
+          ]
+        },
+        "TargetType": "instance",
+        "Targets": [
+          {
+            "Id": {
+              "Ref": "webtierec2"
+            }
+          }
+        ]
       }
     },
     "ALBListener": {
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "DependsOn": [
+        "ApplicationLoadBalancer",
+        "ALBTargetGroup"
+      ],
       "Properties": {
         "DefaultActions": [
           {
@@ -1684,8 +2248,7 @@
       "Type": "AWS::Route53::HostedZone",
       "DependsOn": [
         "ApplicationLoadBalancer",
-        "ALBTargetGroup",
-        "ALBListener"
+        "webtierec2"
       ],
       "Properties": {
         "HostedZoneTags": [
@@ -1745,24 +2308,29 @@
         ]
       }
     },
-    "ApptierLoadBalancer": {
+    "AppLoadBalancer": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "DependsOn": [
         "appprivatesg",
-        "appprivatesubnet"
+        "appprivatesubnet",
+        "appprivatesgdr",
+        "appprivatesubnetdr"
       ],
       "Properties": {
         "Subnets": [
           {
-            "Ref": "publicsubnet"
+            "Ref": "appprivatesubnet"
           },
           {
-            "Ref": "appprivatesubnet"
+            "Ref": "appprivatesubnetdr"
           }
         ],
         "SecurityGroups": [
           {
             "Ref": "appprivatesg"
+          },
+          {
+            "Ref": "appprivatesgdr"
           }
         ],
         "IpAddressType": "ipv4",
@@ -1775,29 +2343,44 @@
         ]
       }
     },
-    "ApptierLBTargetGroup": {
+    "AppLBTargetGroup": {
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "DependsOn": [
+        "AppLoadBalancer"
+      ],
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
         "VpcId": {
           "Ref": "VPC"
-        }
+        },
+        "TargetType": "instance",
+        "Targets": [
+          {
+            "Id": {
+              "Ref": "apptierec2"
+            }
+          }
+        ]
       }
     },
-    "ApptierLBListener": {
+    "AppLBListener": {
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "DependsOn": [
+        "AppLBTargetGroup",
+        "AppLoadBalancer"
+      ],
       "Properties": {
         "DefaultActions": [
           {
             "Type": "forward",
             "TargetGroupArn": {
-              "Ref": "ApptierLBTargetGroup"
+              "Ref": "AppLBTargetGroup"
             }
           }
         ],
         "LoadBalancerArn": {
-          "Ref": "ApptierLoadBalancer"
+          "Ref": "AppLoadBalancer"
         },
         "Port": "80",
         "Protocol": "HTTP"

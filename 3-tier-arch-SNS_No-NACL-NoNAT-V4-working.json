@@ -98,11 +98,11 @@
       "Type": "String",
       "Default": "10.0.4.0/24",
       "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
-      "Description": "This will be Public Subent CIDR"
+      "Description": "This will be Public Subent CIDR for DR"
     },
     "publicSubnetNamedr": {
       "Type": "String",
-      "Description": "This will be Name of Public Subnet (Note: Name is preceded by \"PublicSubnet\")"
+      "Description": "This will be Name of Public Subnet for DR (Note: Name is preceded by \"PublicSubnetDr\")"
     },
     "appprivatesubnetcidr": {
       "Type": "String",
@@ -118,11 +118,11 @@
       "Type": "String",
       "Default": "10.0.5.0/24",
       "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
-      "Description": "This will be App tier Private Subent CIDR"
+      "Description": "This will be App tier Private Subent CIDR for DR"
     },
     "appprivateSubnetNamedr": {
       "Type": "String",
-      "Description": "This will be Name of App Private Subnet (Note: Name is preceded by \"AppPrivateSubnet\")"
+      "Description": "This will be Name of App Private Subnet for DR (Note: Name is preceded by \"AppPrivateSubnetDR\")"
     },
     "db1privatesubnetcidr": {
       "Type": "String",
@@ -279,6 +279,98 @@
   },
   "Metadata": {
     "AWS::CloudFormation::Interface": {
+      "ParameterLabels": {
+        "ProjectRole": {
+          "default": "Enter Project Role Name "
+        },
+        "ProjectPolicy": {
+          "default": "Enter Project Policy Name "
+        },
+        "MySNSTopic": {
+          "default": "Enter SNS Topic Name"
+        },
+        "MySNSSubscription": {
+          "default": "Enter SNS Subscription Name"
+        },
+        "RetentionInDays": {
+          "default": "Enter the FlowLogs Retaintion Period "
+        },
+        "TrafficType": {
+          "default": "Enter the Traffic type Role "
+        },
+        "VPCCIDR": {
+          "default": "Enter VPC CIDR "
+        },
+        "VPCName": {
+          "default": "Enter the VPC Name "
+        },
+        "publicsubnetcidr": {
+          "default": "Enter Public Subnet CIDR"
+        },
+        "publicAZ": {
+          "default": "Select Availability Zone "
+        },
+        "publicsubnetcidrdr": {
+          "default": "Enter Public Subnet CIDR for dr site"
+        },
+        "publicAZdr": {
+          "default": "Select Availability Zone fot DR"
+        },
+        "appprivatesubnetcidr": {
+          "default": "Enter App Private Subnet CIDR"
+        },
+        "privateAZ": {
+          "default": "Select Availability Zone"
+        },
+        "appprivatesubnetcidrdr": {
+          "default": "Enter App Private Subnet CIDR for dr site"
+        },
+        "privateAZdr": {
+          "default": "Select Availability Zone for DR"
+        },
+        "db1privatesubnetcidr": {
+          "default": "Enter 1st DB Private Subnet CIDR"
+        },
+        "DBAZ": {
+          "default": "Select 1st Availability Zone for 1st DB Subent"
+        },
+        "db2privatesubnetcidr": {
+          "default": "Enter 2nd DB Private Subnet CIDR"
+        },
+        "DBAZ2": {
+          "default": "Select 2nd Availability Zone for 2nd DB Subent"
+        },
+        "WebServerTAG": {
+          "default": "Enter Web Tier Environment/Tag "
+        },
+        "WebServerVolumeTermination": {
+          "default": "Web Server volume Termination Protection "
+        },
+        "WebServerTermination": {
+          "default": "Web Server EC2 Termination Protection "
+        },
+        "webInstanceType": {
+          "default": "Instance Type "
+        },
+        "appInstanceType": {
+          "default": "Instance Type "
+        },
+        "WebServerVolumeSize": {
+          "default": "Web Serever Volume Size "
+        },
+        "WebServerKeyPair": {
+          "default": "Web Server Key Pair "
+        },
+        "HostedZoneTag": {
+          "default": "MyProjectHostedZone Tag"
+        },
+        "HostedZoneName": {
+          "default": "MyProjectHostedZone Name"
+        },
+        "RecordSetName": {
+          "default": "RecordSet Name for hosted zone"
+        }
+      },
       "ParameterGroups": [
         {
           "Label": {
@@ -406,99 +498,7 @@
             "RecordSetName"
           ]
         }
-      ],
-      "ParameterLabels": {
-        "ProjectRole": {
-          "default": "Enter Project Role Name "
-        },
-        "ProjectPolicy": {
-          "default": "Enter Project Policy Name "
-        },
-        "MySNSTopic": {
-          "default": "Enter SNS Topic Name"
-        },
-        "MySNSSubscription": {
-          "default": "Enter SNS Subscription Name"
-        },
-        "RetentionInDays": {
-          "default": "Enter the FlowLogs Retaintion Period "
-        },
-        "TrafficType": {
-          "default": "Enter the Traffic type Role "
-        },
-        "VPCCIDR": {
-          "default": "Enter VPC CIDR "
-        },
-        "VPCName": {
-          "default": "Enter the VPC Name "
-        },
-        "publicsubnetcidr": {
-          "default": "Enter Public Subnet CIDR"
-        },
-        "publicAZ": {
-          "default": "Select Availability Zone "
-        },
-        "publicsubnetcidrdr": {
-          "default": "Enter Public Subnet CIDR for dr site"
-        },
-        "publicAZdr": {
-          "default": "Select Availability Zone "
-        },
-        "appprivatesubnetcidr": {
-          "default": "Enter App Private Subnet CIDR"
-        },
-        "privateAZ": {
-          "default": "Select Availability Zone"
-        },
-        "appprivatesubnetcidrdr": {
-          "default": "Enter App Private Subnet CIDR for dr site"
-        },
-        "privateAZdr": {
-          "default": "Select Availability Zone"
-        },
-        "db1privatesubnetcidr": {
-          "default": "Enter 1st DB Private Subnet CIDR"
-        },
-        "DBAZ": {
-          "default": "Select 1st Availability Zone for 1st DB Subent"
-        },
-        "db2privatesubnetcidr": {
-          "default": "Enter 2nd DB Private Subnet CIDR"
-        },
-        "DBAZ2": {
-          "default": "Select 2nd Availability Zone for 2nd DB Subent"
-        },
-        "WebServerTAG": {
-          "default": "Enter Web Tier Environment/Tag "
-        },
-        "WebServerVolumeTermination": {
-          "default": "Web Server volume Termination Protection "
-        },
-        "WebServerTermination": {
-          "default": "Web Server EC2 Termination Protection "
-        },
-        "webInstanceType": {
-          "default": "Instance Type "
-        },
-        "appInstanceType": {
-          "default": "Instance Type "
-        },
-        "WebServerVolumeSize": {
-          "default": "Web Serever Volume Size "
-        },
-        "WebServerKeyPair": {
-          "default": "Web Server Key Pair "
-        },
-        "HostedZoneTag": {
-          "default": "MyProjectHostedZone Tag"
-        },
-        "HostedZoneName": {
-          "default": "MyProjectHostedZone Name"
-        },
-        "RecordSetName": {
-          "default": "RecordSet Name for hosted zone"
-        }
-      }
+      ]
     }
   },
   "Mappings": {
@@ -1032,7 +1032,10 @@
       "Type": "AWS::EC2::Route",
       "DependsOn": [
         "webrt",
-        "igw"
+        "igw",
+        "VPC",
+        "publicsubnet",
+        "publicsubnetdr"
       ],
       "Properties": {
         "DestinationCidrBlock": "0.0.0.0/0",
@@ -2267,7 +2270,9 @@
     "myDNS": {
       "Type": "AWS::Route53::RecordSetGroup",
       "DependsOn": [
-        "HostedZone"
+        "HostedZone",
+        "webtierec2",
+        "apptierec2"
       ],
       "Properties": {
         "Comment": "Zone alias targeted to Web LoadBalancer ApplicationLoadBalancer",
@@ -2280,9 +2285,6 @@
               "Fn::Join": [
                 ".",
                 [
-                  {
-                    "Ref": "RecordSetName"
-                  },
                   {
                     "Ref": "HostedZoneName"
                   }
@@ -2435,6 +2437,23 @@
       "Export": {
         "Name": "DBNetwork-PublicRouteTableID"
       }
+    },
+    "WebsiteURL": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "ApplicationLoadBalancer",
+                "DNSName"
+              ]
+            }
+          ]
+        ]
+      },
+      "Description": "My Bookstore Website"
     },
     "MyStacksRegion": {
       "Description": "VPC Region",

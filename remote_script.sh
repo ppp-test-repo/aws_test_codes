@@ -27,7 +27,7 @@ sudo mv tomcat/ /opt;
 
 #echo -e "\nPlease enter rds password when promted";
 echo -e "\nWating for 40 second before db process\n";
-sleep 40;
+sleep 20;
 
 echo -e "\nSetting up MySQL database\n";
 
@@ -42,9 +42,13 @@ sudo mv tomcat.service /etc/systemd/system/tomcat.service;
 sudo systemctl daemon-reload
 sudo systemctl start tomcat
 sudo systemctl status tomcat
+
 sudo netstat -tulpan | grep 80
 
-sudo cp /home/$username/dbdepweb.xml /opt/tomcat/webapps/Bookstore-Ant-build/WEB-INF/web.xml;
+echo -e "\nPreparing webapps deployment, wait for 40s\n";
+sleep 40;
+
+sudo cp /home/ec2-user/dbdepweb.xml /opt/tomcat/webapps/Bookstore-Ant-build/WEB-INF/web.xml;
 sudo chown -R tomcat:tomcat /opt/tomcat/;
 sudo systemctl restart tomcat;
 

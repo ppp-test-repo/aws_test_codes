@@ -337,6 +337,9 @@ main() {
       then
        task_two;
        delete_nat;
+	   echo -e "\nRestarting apache wait for 15s \n";
+	   sleep 15;
+	   sudo systemctl restart httpd;
      else
        task_one;
 	  
